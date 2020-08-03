@@ -7,6 +7,8 @@ import { map } from "rxjs/operators";
   providedIn: "root",
 })
 export class QuestionService {
+  private questionsObservable: Observable<string[]> = null;
+
   constructor(private http: HttpClient) {}
 
   public getRandomQuestion(): Observable<string> {
@@ -16,15 +18,17 @@ export class QuestionService {
   }
 
   private getQuestions(): Observable<string[]> {
-    const fileObservable = this.http.get("assets/questions.txt", {
-      responseType: "text",
-    });
+    if (this.questionsObservable == null) {
+      const fileObservable = this.http.get("assets/questions.txt", {
+        responseType: "text",
+      });
 
-    const questionsObservable = fileObservable.pipe(
-      map((questions) => questions.split("\n"))
-    );
+      this.questionsObservable = fileObservable.pipe(
+        map((questions) => questions.split("\n"))
+      );
+    }
 
-    return questionsObservable;
+    return this.questionsObservable;
   }
 
   private getRandomElement<T>(array: Array<T>) {

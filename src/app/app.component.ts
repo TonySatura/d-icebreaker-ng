@@ -25,20 +25,22 @@ export class AppComponent implements OnInit {
     const maxHeaderLength = 10;
 
     this.questionService.getRandomQuestion().subscribe((q) => {
-      console.log("loadQuestion");
+      // console.log("loadQuestion");
       const words = q.split(" ");
       this.questionHead = "";
       this.questionBody = "";
 
+      // console.log(words);
+
       for (const word of words) {
-        if (this.questionHead.length + 1 + word.length < maxHeaderLength) {
+        if (
+          this.questionHead === "" ||
+          this.questionHead.length + 1 + word.length < maxHeaderLength
+        ) {
           this.questionHead += word + " ";
         } else {
           this.questionHead.trim();
-          console.log(q);
           this.questionBody = q.substring(this.questionHead.length);
-          console.log(this.questionBody.length);
-          console.log(this.questionBody);
           return;
         }
       }
