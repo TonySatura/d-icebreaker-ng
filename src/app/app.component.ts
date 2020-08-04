@@ -1,13 +1,30 @@
 import { Component, OnInit } from "@angular/core";
+import {
+  animate,
+  state,
+  style,
+  transition,
+  trigger,
+  keyframes,
+  AnimationEvent,
+} from "@angular/animations";
 import { QuestionService } from "./services/question.service";
 
 @Component({
   selector: "app-root",
   templateUrl: "./app.component.html",
   styleUrls: ["./app.component.scss"],
+  animations: [
+    trigger("fadeTrigger", [
+      transition(":enter", [
+        style({ opacity: 0 }),
+        animate("0.8s", style({ opacity: 1 })),
+      ]),
+      transition(":leave", [animate("0.2s", style({ opacity: 0 }))]),
+    ]),
+  ],
 })
 export class AppComponent implements OnInit {
-  title = "d-icebreaker-ng";
   questionHead = "";
   questionBody = "";
 
@@ -18,7 +35,17 @@ export class AppComponent implements OnInit {
   }
 
   onClick() {
-    this.loadQuestion();
+    this.questionHead = "";
+    this.questionBody = "";
+  }
+
+  public onFadeEvent(event: AnimationEvent) {
+    if (event.fromState !== "void") {
+      if (event.phaseName === "done") {
+        console.log("next question requested");
+        this.loadQuestion();
+      }
+    }
   }
 
   private loadQuestion() {
@@ -27,8 +54,6 @@ export class AppComponent implements OnInit {
     this.questionService.getRandomQuestion().subscribe((q) => {
       // console.log("loadQuestion");
       const words = q.split(" ");
-      this.questionHead = "";
-      this.questionBody = "";
 
       // console.log(words);
 

@@ -32,6 +32,12 @@ export class QuestionService {
   }
 
   private getRandomElement<T>(array: Array<T>) {
-    return array[Math.floor(Math.random() * array.length)];
+    return array[this.getRandomNumber(0, array.length - 1)];
+  }
+
+  public getRandomNumber(min: number, max: number) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
   }
 }

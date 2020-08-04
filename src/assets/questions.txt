@@ -32,7 +32,7 @@ If you could star in a movie with any famous actor/actress, who would you choose
 If you won the lottery, what’s the first thing you would buy?
 What’s your best idea for an invention?
 What do you hope to be doing 10 years from now?
-If you could take a year off from work or school, what would you do?
+If you could take a year off from work, what would you do?
 What is your favorite TV series for binge watching?
 What is your favorite line from a poem or song?
 Are you a cat person or a dog person?
@@ -98,3 +98,10 @@ What is something — a food or activity — that you tried reluctantly, and it 
 Where were you born? What is an interesting fact about your hometown?
 What’s your favorite time of day: morning, afternoon, evening or late night?
 What is part of your daily routine that you look forward to every day?
+What will be the title of your autobiography?
+When did you call customer service to complain?
+Where would you vacation if money were no object?
+When you read or watch TV, do you go for fiction or non-fiction?
+Can you remember a bumper sticker that made you smile?
+What is one thing you learned from a project that went wrong?
+What is your superhero name?
