@@ -4,11 +4,16 @@ import { HttpClientModule } from "@angular/common/http";
 import { NgModule } from "@angular/core";
 
 import { AppComponent } from "./app.component";
+import { QuestionsModule } from "./modules/questions/questions.module";
 
 @NgModule({
   declarations: [AppComponent],
-  imports: [BrowserModule, BrowserAnimationsModule, HttpClientModule],
-  providers: [],
+  imports: [
+    BrowserModule,
+    BrowserAnimationsModule,
+    HttpClientModule,
+    QuestionsModule,
+  ],
   bootstrap: [AppComponent],
 })
 export class AppModule {}

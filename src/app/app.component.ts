@@ -1,14 +1,12 @@
 import { Component, OnInit } from "@angular/core";
 import {
   animate,
-  state,
   style,
   transition,
   trigger,
-  keyframes,
   AnimationEvent,
 } from "@angular/animations";
-import { QuestionService } from "./services/question.service";
+import { QuestionService } from "./modules/questions/services/question.service";
 
 @Component({
   selector: "app-root",

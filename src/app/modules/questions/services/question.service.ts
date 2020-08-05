@@ -2,14 +2,13 @@ import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { Observable } from "rxjs";
 import { map } from "rxjs/operators";
+import { CacheService } from "../../shared/services/cache.service";
 
 @Injectable({
   providedIn: "root",
 })
 export class QuestionService {
-  private questionsObservable: Observable<string[]> = null;
-
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private cacheService: CacheService) {}
 
   public getRandomQuestion(): Observable<string> {
     return this.getQuestions().pipe(
@@ -18,24 +17,22 @@ export class QuestionService {
   }
 
   private getQuestions(): Observable<string[]> {
-    if (this.questionsObservable == null) {
+    // TODO: Add Cache Service (see image-gallery-ng)
+
+    return this.cacheService.getObservable(null, (r) => {
       const fileObservable = this.http.get("assets/questions.txt", {
         responseType: "text",
       });
 
-      this.questionsObservable = fileObservable.pipe(
-        map((questions) => questions.split("\n"))
-      );
-    }
-
-    return this.questionsObservable;
+      return fileObservable.pipe(map((questions) => questions.split("\n")));
+    });
   }
 
   private getRandomElement<T>(array: Array<T>) {
     return array[this.getRandomNumber(0, array.length - 1)];
   }
 
-  public getRandomNumber(min: number, max: number) {
+  private getRandomNumber(min: number, max: number) {
     min = Math.ceil(min);
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min + 1)) + min;
