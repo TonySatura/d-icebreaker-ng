@@ -20,7 +20,7 @@ export class QuestionService {
     // TODO: Add Cache Service (see image-gallery-ng)
 
     return this.cacheService.getObservable(null, (r) => {
-      const fileObservable = this.http.get("assets/questions.txt", {
+      const fileObservable = this.http.get("data/questions.txt", {
         responseType: "text",
       });
 
