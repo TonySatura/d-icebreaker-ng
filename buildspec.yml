@@ -15,5 +15,5 @@ phases:
 artifacts:
   files:
     - "**/*"
-  base-directory: "dist*"
+  base-directory: "dist/d-icebreaker-ng*"
   discard-paths: no
