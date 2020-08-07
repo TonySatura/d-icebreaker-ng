@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import { HttpClient } from "@angular/common/http";
 import { Observable } from "rxjs";
 import { map } from "rxjs/operators";
-import { CacheService } from "../../shared/services/cache.service";
+import { CacheService } from "../../cache/services/cache.service";
 
 @Injectable({
   providedIn: "root",
