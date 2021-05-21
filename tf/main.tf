@@ -8,17 +8,17 @@ terraform {
 }
 
 locals {
-  app_name    = "d-icebreaker${var.branch != "master" ? "-${var.branch}" : ""}"
+  app_name    = "d-icebreaker${var.environment != "master" ? "-${var.branch}" : ""}"
   branch      = var.branch
   environment = var.environment
   github_user = "TonySatura"
   github_repo = "d-icebreaker-ng"
   profile     = var.profile
   region      = var.region
-  tags_common = {
+  tags        = {
+    app-name    = local.app_name
     branch      = var.branch
     environment = var.environment
-    name        = local.app_name
     owner       = "t.satura@icloud.com"
     github      = "${local.github_user}/${local.github_repo}"
   }

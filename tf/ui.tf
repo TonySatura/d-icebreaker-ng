@@ -4,7 +4,7 @@ resource "aws_s3_bucket" "ui_bucket" {
   website {
     index_document = "index.html"
   }
-  tags = local.tags_common
+  tags = local.tags
 }
 
 resource "aws_cloudfront_origin_access_identity" "ui_oai" {
@@ -52,10 +52,11 @@ resource "aws_s3_bucket_policy" "bucket_policy" {
 # }
 
 resource "aws_cloudfront_distribution" "ui_distribution" {
-  comment         = "Cloudfront distribution for ${local.app_name} UI"
-  enabled         = true
-  is_ipv6_enabled = true
-  price_class     = "PriceClass_100"
+  comment             = "Cloudfront distribution for ${local.app_name} UI"
+  enabled             = true
+  is_ipv6_enabled     = true
+  default_root_object = "index.html"
+  price_class         = "PriceClass_100"
 
   origin {
     domain_name = aws_s3_bucket.ui_bucket.bucket_regional_domain_name
@@ -79,6 +80,9 @@ resource "aws_cloudfront_distribution" "ui_distribution" {
     }
 
     viewer_protocol_policy = "redirect-to-https"
+    min_ttl                = 1
+    default_ttl            = 1 * 60 * 60 * 24
+    max_ttl                = 1 * 60 * 60 * 24 * 365
   }
 
   restrictions {
@@ -90,5 +94,7 @@ resource "aws_cloudfront_distribution" "ui_distribution" {
   viewer_certificate {
     cloudfront_default_certificate = true
   }
+
+  tags = local.tags
 
 }
