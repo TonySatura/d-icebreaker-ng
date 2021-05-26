@@ -8,19 +8,19 @@ terraform {
 }
 
 locals {
-  app_name    = "d-icebreaker${var.environment != "master" ? "-${var.branch}" : ""}"
-  branch      = var.branch
-  environment = var.environment
-  github_user = "TonySatura"
-  github_repo = "d-icebreaker-ng"
-  profile     = var.profile
-  region      = var.region
-  tags        = {
+  app_name      = "d-icebreaker${var.environment != "prod" ? "-${var.environment}" : ""}${var.github_branch != "main" ? "-${var.github_branch}" : ""}"
+  environment   = var.environment
+  github_org    = "TonySatura"
+  github_repo   = "d-icebreaker-ng"
+  github_branch = var.github_branch
+  profile       = var.profile
+  region        = var.region
+  tags = {
     app-name    = local.app_name
-    branch      = var.branch
+    branch      = var.github_branch
     environment = var.environment
     owner       = "t.satura@icloud.com"
-    github      = "${local.github_user}/${local.github_repo}"
+    github      = "${local.github_org}/${local.github_repo}"
   }
 }
 

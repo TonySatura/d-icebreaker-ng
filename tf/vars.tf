@@ -10,10 +10,10 @@ variable "environment" {
   default     = "prod"
 }
 
-variable "branch" {
+variable "github_branch" {
   description = "the branch name"
   type        = string
-  default     = "master"
+  default     = "main"
 }
 
 variable "region" {
