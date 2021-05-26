@@ -5,6 +5,7 @@ resource "aws_s3_bucket" "ui_bucket" {
     index_document = "index.html"
   }
   tags = local.tags
+  force_destroy = true
 }
 
 resource "aws_cloudfront_origin_access_identity" "ui_oai" {
