@@ -1,11 +1,15 @@
 resource "aws_codestarconnections_connection" "github_connection" {
-  name          = "github-${random_id.id.hex}"
+  name          = "${local.github_org}-github-connection"
   provider_type = "GitHub"
+  tags = {
+    github-organization = "${local.github_org}"
+  }
 }
 
 resource "aws_s3_bucket" "pipeline_bucket" {
-  bucket = "${local.app_name}-pipeline-artifacts-${random_id.id.hex}"
-  acl    = "private"
+  bucket        = "${local.app_name}-pipeline-artifacts-${random_id.id.hex}"
+  acl           = "private"
+  force_destroy = true
 }
 
 resource "aws_iam_role" "pipeline_role" {
@@ -90,9 +94,10 @@ resource "aws_codepipeline" "codepipeline" {
       output_artifacts = ["source_output"]
 
       configuration = {
-        ConnectionArn    = aws_codestarconnections_connection.github_connection.arn
-        FullRepositoryId = "${local.github_org}/${local.github_repo}"
-        BranchName       = "${local.github_branch}"
+        ConnectionArn        = aws_codestarconnections_connection.github_connection.arn
+        FullRepositoryId     = "${local.github_org}/${local.github_repo}"
+        BranchName           = "${local.github_branch}"
+        OutputArtifactFormat = "CODE_ZIP"
       }
     }
   }
