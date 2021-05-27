@@ -1,81 +1,30 @@
 resource "aws_codestarconnections_connection" "github_connection" {
+  # The aws_codestarconnections_connection resource is created in the state PENDING. 
+  # Authentication with the connection provider must be completed in the AWS Console.
   name          = "${local.github_org}-github-connection"
   provider_type = "GitHub"
-  tags = {
-    github-organization = "${local.github_org}"
-  }
+  tags          = local.base_tags
 }
 
 resource "aws_s3_bucket" "pipeline_bucket" {
   bucket        = "${local.app_name}-pipeline-artifacts-${random_id.id.hex}"
   acl           = "private"
   force_destroy = true
+  tags          = local.base_tags
 }
 
-resource "aws_iam_role" "pipeline_role" {
-  name = "${local.app_name}-pipeline-${random_id.id.hex}"
-
-  assume_role_policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect": "Allow",
-      "Principal": {
-        "Service": "codepipeline.amazonaws.com"
-      },
-      "Action": "sts:AssumeRole"
-    }
-  ]
-}
-EOF
+resource "aws_s3_bucket_public_access_block" "pipeline_bucket_public_access" {
+  bucket                  = aws_s3_bucket.pipeline_bucket.id
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
 }
 
-resource "aws_iam_role_policy" "pipeline_policy" {
-  name = "${local.app_name}-pipeline-${random_id.id.hex}"
-  role = aws_iam_role.pipeline_role.id
-
-  policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Effect":"Allow",
-      "Action": [
-        "s3:GetObject",
-        "s3:GetObjectVersion",
-        "s3:GetBucketVersioning",
-        "s3:PutObjectAcl",
-        "s3:PutObject"
-      ],
-      "Resource": [
-        "${aws_s3_bucket.pipeline_bucket.arn}",
-        "${aws_s3_bucket.pipeline_bucket.arn}/*"
-      ]
-    },
-    {
-      "Effect": "Allow",
-      "Action": [
-        "codestar-connections:UseConnection"
-      ],
-      "Resource": "${aws_codestarconnections_connection.github_connection.arn}"
-    },
-    {
-      "Effect": "Allow",
-      "Action": [
-        "codebuild:BatchGetBuilds",
-        "codebuild:StartBuild"
-      ],
-      "Resource": "*"
-    }
-  ]
-}
-EOF
-}
-
-resource "aws_codepipeline" "codepipeline" {
+resource "aws_codepipeline" "pipeline" {
   name     = "${local.app_name}-pipeline-${random_id.id.hex}"
-  role_arn = aws_iam_role.pipeline_role.arn
+  role_arn = aws_iam_role.iam_pipeline_role.arn
+  tags     = local.base_tags
 
   artifact_store {
     location = aws_s3_bucket.pipeline_bucket.bucket
@@ -115,7 +64,7 @@ resource "aws_codepipeline" "codepipeline" {
       version          = "1"
 
       configuration = {
-        ProjectName = "${local.app_name}-build-${random_id.id.hex}"
+        ProjectName = aws_codebuild_project.build.name
       }
     }
   }
@@ -136,5 +85,25 @@ resource "aws_codepipeline" "codepipeline" {
         Extract    = true
       }
     }
+  }
+}
+
+resource "aws_codebuild_project" "build" {
+  name         = "${local.app_name}-build-${random_id.id.hex}"
+  service_role = aws_iam_role.iam_build_role.arn
+  tags         = local.base_tags
+
+  artifacts {
+    type = "CODEPIPELINE"
+  }
+
+  environment {
+    compute_type                = "BUILD_GENERAL1_SMALL"
+    image                       = "aws/codebuild/standard:3.0"
+    type                        = "LINUX_CONTAINER"
+    image_pull_credentials_type = "CODEBUILD"
+  }
+  source {
+    type = "CODEPIPELINE"
   }
 }

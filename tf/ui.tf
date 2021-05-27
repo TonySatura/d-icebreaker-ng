@@ -4,28 +4,25 @@ resource "aws_s3_bucket" "ui_bucket" {
   website {
     index_document = "index.html"
   }
-  tags = local.tags
   force_destroy = true
+  tags          = local.base_tags
+}
+
+resource "aws_s3_bucket_public_access_block" "ui_bucket_public_access" {
+  bucket                  = aws_s3_bucket.ui_bucket.id
+  block_public_acls       = true
+  block_public_policy     = true
+  ignore_public_acls      = true
+  restrict_public_buckets = true
 }
 
 resource "aws_cloudfront_origin_access_identity" "ui_oai" {
   comment = "OAI for ${local.app_name} UI"
 }
 
-data "aws_iam_policy_document" "iam_policy" {
-  statement {
-    actions   = ["s3:GetBucket*", "s3:GetObject*", "s3:List*"]
-    resources = [aws_s3_bucket.ui_bucket.arn, "${aws_s3_bucket.ui_bucket.arn}/*"]
-    principals {
-      type        = "AWS"
-      identifiers = [aws_cloudfront_origin_access_identity.ui_oai.iam_arn]
-    }
-  }
-}
-
-resource "aws_s3_bucket_policy" "bucket_policy" {
+resource "aws_s3_bucket_policy" "ui_bucket_policy" {
   bucket = aws_s3_bucket.ui_bucket.id
-  policy = data.aws_iam_policy_document.iam_policy.json
+  policy = data.aws_iam_policy_document.iam_ui_policy.json
 }
 
 # resource "aws_route53_record" "ui_record" {
@@ -58,6 +55,7 @@ resource "aws_cloudfront_distribution" "ui_distribution" {
   is_ipv6_enabled     = true
   default_root_object = "index.html"
   price_class         = "PriceClass_100"
+  tags                = local.base_tags
 
   origin {
     domain_name = aws_s3_bucket.ui_bucket.bucket_regional_domain_name
@@ -95,7 +93,4 @@ resource "aws_cloudfront_distribution" "ui_distribution" {
   viewer_certificate {
     cloudfront_default_certificate = true
   }
-
-  tags = local.tags
-
 }

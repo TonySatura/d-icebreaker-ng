@@ -15,10 +15,11 @@ locals {
   github_branch = var.github_branch
   profile       = var.profile
   region        = var.region
-  tags = {
+  base_tags = {
     app-name    = local.app_name
     branch      = var.github_branch
     environment = var.environment
+    tf-id       = random_id.id.hex
     owner       = "t.satura@icloud.com"
     github      = "${local.github_org}/${local.github_repo}"
   }
